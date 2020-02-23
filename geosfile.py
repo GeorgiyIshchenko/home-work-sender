@@ -1,1 +1,1 @@
-print("hi sisters")
+print("hi pashka")
