@@ -1,1 +1,1 @@
-print("hi pashka")
+print("я типа строку изменил")
