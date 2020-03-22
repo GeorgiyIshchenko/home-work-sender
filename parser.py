@@ -1,11 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 def inputSN():
-    subject=int(input("""Введте предмет:
-    1)Алгебра
-    2)Геометрия
-    3)Физика\n"""))
-    number = input("Введте номер\n")
+    subjects={1:"Алгебра",2:"Геометрия",3:"Физика",4:"История (учебник)",5:"История (рабочая тетрадь)"}
+    subject=int(input("Введте предмет:\n1)"+subjects.get(1)+"\n2)"+subjects.get(2)+"\n3)"+subjects.get(3)+"\n4)"+subjects.get(4)+"\n5)"+subjects.get(5)+"\n"))
+    if subject<4:
+        s="Введите номер"
+    elif subject==5:
+        s="Введите страницу"
+    else:
+        s="Введите параграф"
+    number = input(s+"\n")
     requestdata={"subject":subject,"number":number}
     return requestdata
 def chooseURL(data):
@@ -28,11 +32,36 @@ def chooseURL(data):
             subjectURL=URL
         subjectURL+="%d1%81%d0%b1%d0%be%d1%80%d0%bd%d0%b8%d0%ba-%d0%b7%d0%b0%d0%b4%d0%b0%d1%87-%d0%bf%d0%be-%d1%84%d0%b8%d0%b7%d0%b8%d0%ba%d0%b5-7-9-%d0%ba%d0%bb%d0%b0%d1%81%d1%81-%d0%bb%d1%83%d0%ba%d0%b0%d1%88%d0%b8/"
         subjectURL+=data.get("number")
+    elif subject==4:
+        getHistoryStudentBook()
+        return
+    else:
+        getHistoryWorkBook()
+        return
     if exception>2:
         subjectURL += "-" + str(exception)
         getPicture(subjectURL)
     else:
         subjectURL += "-"+str(exception)
+def getHistoryStudentBook():
+    global data
+    URL="https://resheba.me/gdz/istorija/8-klass/arsentev/"+data.get("number")
+    request=requests.get(URL).text
+    soap=BeautifulSoup(request,"html.parser")
+    article=soap.find_all("p")
+    for i in article:
+        try:
+            print(i.find("src").text)
+        except:
+            print(i.text)
+def getHistoryWorkBook():
+    global data
+    URL="https://www.euroki.org/gdz/ru/istoriya/8_klass/rabochaya-tetrad-po-istorii-rossii-8-klass-artasov-fgos-663/zadanie-str-"+data.get("number")
+    request=requests.get(URL).text
+    soap=BeautifulSoup(request,"html.parser")
+    article=soap.find("a",class_="fancybox")
+    print(article.get("href"))
+
 def getUrl(data):
     URL="https://xn----7sbbtbnv6bvx1b4d.xn--p1ai/"
     return URL
